@@ -53,6 +53,22 @@ export default async function RecipePage({
         <DeleteButton id={recipe.id} />
       </header>
 
+      {recipe.images.length > 0 && (
+        <section>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {recipe.images.map((src, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={src}
+                alt={`${recipe.title} photo ${i + 1}`}
+                className="aspect-square w-full rounded-md border border-stone-200 object-cover"
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="grid gap-8 lg:grid-cols-[1fr_2fr]">
         <section className="rounded-lg border border-stone-200 bg-white p-5">
           <h2 className="text-lg font-semibold">Ingredients</h2>
@@ -91,8 +107,7 @@ export default async function RecipePage({
 
       {recipe.sourcePdf && (
         <p className="text-xs text-stone-400">
-          Extracted from{" "}
-          <span className="font-mono">{recipe.sourcePdf}</span>
+          Source: <span className="font-mono">{recipe.sourcePdf}</span>
         </p>
       )}
     </article>

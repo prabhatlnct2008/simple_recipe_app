@@ -46,25 +46,33 @@ Notes:
 
 ## Using it
 
-1. Click **Upload PDF** on the home page.
-2. Pick a recipe PDF. The server extracts the text, asks OpenAI to structure it, and stores the result.
-3. You're redirected to the new recipe page.
-4. Use the search bar on the home page to filter by title, ingredient, or tag.
-5. Hit **Delete** on a recipe page to remove it.
+On the home page you have two ways to add a recipe:
+
+- **Upload PDF** — pick a recipe PDF. Server extracts text, OpenAI structures it.
+- **Paste text** — paste the raw recipe text. Optionally attach up to 5 photos
+  (compressed client-side). Photos appear on the recipe page and as the card
+  thumbnail.
+
+After saving you're redirected to the recipe page. Use the search bar on the
+home page to filter by title, ingredient, or tag. Hit **Delete** on a recipe
+page to remove it.
 
 ## File layout
 
 ```
 app/
   page.tsx                       — recipe list + search + upload
-  recipes/[id]/page.tsx          — recipe detail view
+  recipes/[id]/page.tsx          — recipe detail view (with photo gallery)
   api/recipes/route.ts           — GET (list, search)
   api/recipes/[id]/route.ts      — GET, DELETE
   api/recipes/upload/route.ts    — POST (PDF upload + OpenAI parse)
+  api/recipes/text/route.ts      — POST (pasted text + images + OpenAI parse)
 components/
-  UploadCard.tsx
+  UploadCard.tsx                 — tabbed (PDF / paste text)
+  PdfUploadForm.tsx
+  PasteTextForm.tsx              — pastes text + attaches/compresses images
   SearchBar.tsx
-  RecipeCard.tsx
+  RecipeCard.tsx                 — shows first image as thumbnail
   DeleteButton.tsx
 lib/
   db.ts        — SQLite init

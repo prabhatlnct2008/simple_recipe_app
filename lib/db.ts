@@ -23,6 +23,7 @@ async function init(): Promise<Client> {
       ingredients TEXT NOT NULL DEFAULT '[]',
       instructions TEXT NOT NULL DEFAULT '[]',
       tags TEXT NOT NULL DEFAULT '[]',
+      images TEXT NOT NULL DEFAULT '[]',
       source_pdf TEXT NOT NULL DEFAULT '',
       created_at INTEGER NOT NULL
     )
@@ -30,6 +31,15 @@ async function init(): Promise<Client> {
   await client.execute(
     `CREATE INDEX IF NOT EXISTS idx_recipes_created_at ON recipes(created_at DESC)`
   );
+
+  // Migrate older deployments that pre-date the images column.
+  const cols = await client.execute(`PRAGMA table_info(recipes)`);
+  const hasImages = cols.rows.some((r) => String(r.name) === "images");
+  if (!hasImages) {
+    await client.execute(
+      `ALTER TABLE recipes ADD COLUMN images TEXT NOT NULL DEFAULT '[]'`
+    );
+  }
 
   return client;
 }

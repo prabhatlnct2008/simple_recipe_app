@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
 
   const recipe = await createRecipe({
     ...parsed,
+    images: [],
     sourcePdf: file.name,
   });
 

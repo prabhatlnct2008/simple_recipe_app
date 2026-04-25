@@ -35,6 +35,7 @@ function rowToRecipe(row: Row): Recipe {
     ingredients: safeParseArray(asString(row.ingredients) || "[]"),
     instructions: safeParseArray(asString(row.instructions) || "[]"),
     tags: safeParseArray(asString(row.tags) || "[]"),
+    images: safeParseArray(asString(row.images) || "[]"),
     sourcePdf: asString(row.source_pdf),
     createdAt: asNumber(row.created_at),
   };
@@ -77,8 +78,8 @@ export async function createRecipe(input: RecipeInput): Promise<Recipe> {
   await db.execute({
     sql: `INSERT INTO recipes (
       id, title, description, servings, prep_time, cook_time,
-      ingredients, instructions, tags, source_pdf, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ingredients, instructions, tags, images, source_pdf, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       id,
       input.title,
@@ -89,6 +90,7 @@ export async function createRecipe(input: RecipeInput): Promise<Recipe> {
       JSON.stringify(input.ingredients),
       JSON.stringify(input.instructions),
       JSON.stringify(input.tags),
+      JSON.stringify(input.images),
       input.sourcePdf,
       createdAt,
     ],

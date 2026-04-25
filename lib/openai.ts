@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import type { RecipeInput } from "./types";
 
-type ParsedRecipe = Omit<RecipeInput, "sourcePdf">;
+type ParsedRecipe = Omit<RecipeInput, "sourcePdf" | "images">;
 
 const SYSTEM_PROMPT = `You extract structured recipe information from raw recipe PDF text.
 Return ONLY a JSON object matching this schema:

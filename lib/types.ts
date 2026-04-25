@@ -8,6 +8,7 @@ export type Recipe = {
   ingredients: string[];
   instructions: string[];
   tags: string[];
+  images: string[];
   sourcePdf: string;
   createdAt: number;
 };
