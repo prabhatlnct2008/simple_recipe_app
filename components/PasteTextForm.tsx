@@ -83,7 +83,9 @@ export default function PasteTextForm() {
           images: images.map((i) => i.dataUrl),
         }),
       });
-      const data = await res.json();
+      const data = await res
+        .json()
+        .catch(() => ({ error: `Server returned ${res.status} ${res.statusText}` }));
       if (!res.ok) throw new Error(data.error || "Failed to save recipe");
       router.refresh();
       if (data.recipe?.id) router.push(`/recipes/${data.recipe.id}`);

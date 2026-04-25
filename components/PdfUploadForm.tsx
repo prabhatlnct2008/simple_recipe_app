@@ -21,7 +21,9 @@ export default function PdfUploadForm() {
         method: "POST",
         body: fd,
       });
-      const data = await res.json();
+      const data = await res
+        .json()
+        .catch(() => ({ error: `Server returned ${res.status} ${res.statusText}` }));
       if (!res.ok) throw new Error(data.error || "Upload failed");
       router.refresh();
       if (data.recipe?.id) router.push(`/recipes/${data.recipe.id}`);
