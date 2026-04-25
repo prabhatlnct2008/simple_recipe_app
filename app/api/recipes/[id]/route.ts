@@ -7,7 +7,7 @@ export async function GET(
   _req: Request,
   { params }: { params: { id: string } }
 ) {
-  const recipe = getRecipe(params.id);
+  const recipe = await getRecipe(params.id);
   if (!recipe) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -18,7 +18,7 @@ export async function DELETE(
   _req: Request,
   { params }: { params: { id: string } }
 ) {
-  const ok = deleteRecipe(params.id);
+  const ok = await deleteRecipe(params.id);
   if (!ok) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

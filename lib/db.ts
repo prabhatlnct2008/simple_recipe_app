@@ -1,22 +1,18 @@
-import Database from "better-sqlite3";
-import fs from "node:fs";
-import path from "node:path";
+import { createClient, type Client } from "@libsql/client";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DB_PATH = path.join(DATA_DIR, "recipes.db");
+let clientInstance: Client | null = null;
+let initPromise: Promise<Client> | null = null;
 
-let dbInstance: Database.Database | null = null;
-
-export function getDb(): Database.Database {
-  if (dbInstance) return dbInstance;
-
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+async function init(): Promise<Client> {
+  const url = process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.TURSO_AUTH_TOKEN;
+  if (!url) {
+    throw new Error("TURSO_DATABASE_URL is not set");
   }
 
-  const db = new Database(DB_PATH);
-  db.pragma("journal_mode = WAL");
-  db.exec(`
+  const client = createClient({ url, authToken });
+
+  await client.execute(`
     CREATE TABLE IF NOT EXISTS recipes (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -29,10 +25,22 @@ export function getDb(): Database.Database {
       tags TEXT NOT NULL DEFAULT '[]',
       source_pdf TEXT NOT NULL DEFAULT '',
       created_at INTEGER NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS idx_recipes_created_at ON recipes(created_at DESC);
+    )
   `);
+  await client.execute(
+    `CREATE INDEX IF NOT EXISTS idx_recipes_created_at ON recipes(created_at DESC)`
+  );
 
-  dbInstance = db;
-  return db;
+  return client;
+}
+
+export async function getDb(): Promise<Client> {
+  if (clientInstance) return clientInstance;
+  if (!initPromise) {
+    initPromise = init().then((c) => {
+      clientInstance = c;
+      return c;
+    });
+  }
+  return initPromise;
 }

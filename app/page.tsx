@@ -5,13 +5,13 @@ import RecipeCard from "@/components/RecipeCard";
 
 export const dynamic = "force-dynamic";
 
-export default function HomePage({
+export default async function HomePage({
   searchParams,
 }: {
   searchParams: { q?: string };
 }) {
   const q = searchParams.q?.trim() || "";
-  const recipes = listRecipes(q || undefined);
+  const recipes = await listRecipes(q || undefined);
 
   return (
     <div className="space-y-6">

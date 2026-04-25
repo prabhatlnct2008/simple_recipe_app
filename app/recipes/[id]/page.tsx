@@ -5,8 +5,12 @@ import DeleteButton from "@/components/DeleteButton";
 
 export const dynamic = "force-dynamic";
 
-export default function RecipePage({ params }: { params: { id: string } }) {
-  const recipe = getRecipe(params.id);
+export default async function RecipePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const recipe = await getRecipe(params.id);
   if (!recipe) notFound();
 
   return (

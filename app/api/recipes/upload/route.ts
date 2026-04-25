@@ -4,6 +4,7 @@ import { extractRecipeFromText } from "@/lib/openai";
 import { createRecipe } from "@/lib/recipes";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   let formData: FormData;
@@ -20,8 +21,8 @@ export async function POST(req: NextRequest) {
   if (!file.name.toLowerCase().endsWith(".pdf")) {
     return NextResponse.json({ error: "Only PDF files are accepted" }, { status: 400 });
   }
-  if (file.size > 10 * 1024 * 1024) {
-    return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
+  if (file.size > 4 * 1024 * 1024) {
+    return NextResponse.json({ error: "File too large (max 4MB)" }, { status: 400 });
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 
-  const recipe = createRecipe({
+  const recipe = await createRecipe({
     ...parsed,
     sourcePdf: file.name,
   });
