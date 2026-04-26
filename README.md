@@ -6,9 +6,11 @@ Upload recipe PDFs, let OpenAI parse them, browse and search the results. Nothin
 
 - Next.js 14 (App Router) + React + TypeScript
 - Tailwind CSS
-- Turso (hosted libSQL / SQLite) via `@libsql/client`
+- Turso (hosted libSQL / SQLite) via `@libsql/client`, with native vector
+  search (`F32_BLOB` + `vector_distance_cos`) for semantic queries
 - `pdf-parse` for PDF text extraction
-- OpenAI Chat Completions (default model `gpt-4o-mini`) in JSON mode
+- OpenAI Chat Completions (default `gpt-4o-mini`) for recipe extraction,
+  and `text-embedding-3-small` for semantic search embeddings
 
 ## Setup
 
@@ -54,8 +56,13 @@ On the home page you have two ways to add a recipe:
   thumbnail.
 
 After saving you're redirected to the recipe page. Use the search bar on the
-home page to filter by title, ingredient, or tag. Hit **Delete** on a recipe
-page to remove it.
+home page to filter by title, ingredient, or tag — it's a hybrid: exact
+text matches (`LIKE`) plus a semantic top-K via OpenAI embeddings stored in
+the `embedding` column. Hit **Delete** on a recipe page to remove it.
+
+> **Note:** Recipes saved before semantic search was added have a `NULL`
+> embedding and only show up via text matching. They'll be backfilled if
+> you re-upload them.
 
 ## File layout
 

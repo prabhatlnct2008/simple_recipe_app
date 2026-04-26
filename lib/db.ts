@@ -25,7 +25,8 @@ async function init(): Promise<Client> {
       tags TEXT NOT NULL DEFAULT '[]',
       images TEXT NOT NULL DEFAULT '[]',
       source_pdf TEXT NOT NULL DEFAULT '',
-      created_at INTEGER NOT NULL
+      created_at INTEGER NOT NULL,
+      embedding F32_BLOB(1536)
     )
   `);
   await client.execute(
@@ -34,10 +35,16 @@ async function init(): Promise<Client> {
 
   // Migrate older deployments that pre-date the images column.
   const cols = await client.execute(`PRAGMA table_info(recipes)`);
-  const hasImages = cols.rows.some((r) => String(r.name) === "images");
-  if (!hasImages) {
+  const colNames = new Set(cols.rows.map((r) => String(r.name)));
+  if (!colNames.has("images")) {
     await client.execute(
       `ALTER TABLE recipes ADD COLUMN images TEXT NOT NULL DEFAULT '[]'`
+    );
+  }
+  if (!colNames.has("embedding")) {
+    // F32_BLOB is libSQL's native vector column (Turso vector search).
+    await client.execute(
+      `ALTER TABLE recipes ADD COLUMN embedding F32_BLOB(1536)`
     );
   }
 
