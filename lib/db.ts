@@ -24,6 +24,8 @@ async function init(): Promise<Client> {
       instructions TEXT NOT NULL DEFAULT '[]',
       tags TEXT NOT NULL DEFAULT '[]',
       images TEXT NOT NULL DEFAULT '[]',
+      nutrition TEXT,
+      notes TEXT NOT NULL DEFAULT '[]',
       source_pdf TEXT NOT NULL DEFAULT '',
       created_at INTEGER NOT NULL,
       embedding F32_BLOB(1536)
@@ -45,6 +47,14 @@ async function init(): Promise<Client> {
     // F32_BLOB is libSQL's native vector column (Turso vector search).
     await client.execute(
       `ALTER TABLE recipes ADD COLUMN embedding F32_BLOB(1536)`
+    );
+  }
+  if (!colNames.has("nutrition")) {
+    await client.execute(`ALTER TABLE recipes ADD COLUMN nutrition TEXT`);
+  }
+  if (!colNames.has("notes")) {
+    await client.execute(
+      `ALTER TABLE recipes ADD COLUMN notes TEXT NOT NULL DEFAULT '[]'`
     );
   }
 
