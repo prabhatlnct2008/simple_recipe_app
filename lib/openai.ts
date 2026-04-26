@@ -22,13 +22,13 @@ Rules:
 - Output JSON only, no markdown, no commentary.`;
 
 export async function extractRecipeFromText(rawText: string): Promise<ParsedRecipe> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
     throw new Error("OPENAI_API_KEY is not set on the server");
   }
 
   const client = new OpenAI({ apiKey });
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const model = process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini";
 
   const truncated = rawText.length > 20000 ? rawText.slice(0, 20000) : rawText;
 
